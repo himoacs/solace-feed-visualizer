@@ -5,3 +5,7 @@ dist/
 .env
 .env.local
 *.tsbuildinfo
+# Docker build copies the web build here at image-build time (see
+# Dockerfile) - only ever produced locally by manually reproducing that
+# step, never something to commit.
+packages/server/public/
