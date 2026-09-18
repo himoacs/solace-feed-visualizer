@@ -1,0 +1,18 @@
+{
+  "name": "solace-feed-visualizer",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @feed-viz/server --filter @feed-viz/web dev",
+    "dev:web": "pnpm --filter @feed-viz/web dev",
+    "dev:server": "pnpm --filter @feed-viz/server dev",
+    "build": "pnpm --filter @feed-viz/shared build && pnpm --filter @feed-viz/server build && pnpm --filter @feed-viz/web build",
+    "lint": "pnpm --filter @feed-viz/web lint"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

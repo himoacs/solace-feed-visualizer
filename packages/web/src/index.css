@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-solace-blue-dark text-white font-sans antialiased;
+}
+
+/* React Flow's own stylesheet gives each Controls button an opaque #fefefe
+   background that sits on top of the panel's own background - a class on
+   the <Controls> container never reaches it, so it's overridden here
+   directly (confirmed via computed styles: without this, a white icon sat
+   on a near-white button and was completely invisible). */
+.react-flow__controls-button {
+  background: #093b5f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.react-flow__controls-button:hover {
+  background: #03213b;
+}
+.react-flow__controls-button svg {
+  fill: #ffffff;
+}
