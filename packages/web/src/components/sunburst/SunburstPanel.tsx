@@ -175,7 +175,7 @@ export function SunburstPanel({ onClose }: { onClose: () => void }) {
         </select>
         <label className={`flex items-center gap-1 text-xs ${dim}`}>
           Detail
-          <input type="range" min={1} max={6} value={detailLevel} onChange={(e) => setDetailLevel(Number(e.target.value))} className="w-16" />
+          <input type="range" min={1} max={10} value={detailLevel} onChange={(e) => setDetailLevel(Number(e.target.value))} className="w-16" />
           {detailLevel}
         </label>
         <label className={`flex items-center gap-1 text-xs ${dim}`}>

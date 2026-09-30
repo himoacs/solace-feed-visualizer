@@ -137,6 +137,25 @@ everywhere as a separate, always-on source regardless of which vertical is selec
 Import** at the bottom of the left nav saves and restores an entire canvas scenario (nodes, topics,
 taxonomy) as a file, for repeatable demos.
 
+## Running a live demo
+
+The canvas lives in browser memory, so anything that reloads the page clears it. A few things make
+that much less likely, or easy to recover from:
+
+- **Present from the Docker build, not `pnpm dev`.** The Vite dev server reloads the page whenever it
+  can't hot-swap a code change, and whenever its connection to the browser drops and comes back.
+  The Docker image serves a static build, so neither can happen.
+- **If the page does reload, click Restore.** The canvas is saved continuously. After a reload a
+  "Restore your previous canvas?" prompt appears (top right of the canvas). Once the broker is
+  connected, one click re-creates every publisher and consumer with its name, position, and
+  settings, and reconnects each queue consumer to its existing queue.
+- **Keep the tab from being put to sleep.** Chrome's Memory Saver can discard a background tab while
+  you're on your slides or in Broker Manager, then reload it when you return. Add `localhost` under
+  Chrome Settings → Performance → "Always keep these sites active".
+- **If the nodes vanish but the page didn't reload**, the view has probably been panned or zoomed
+  away from them (trackpad scrolling zooms the canvas). Click the fit-view button in the
+  bottom-left controls to bring everything back into view.
+
 ## Project structure
 
 A pnpm workspace with three packages: `packages/shared` (types shared between web and server),

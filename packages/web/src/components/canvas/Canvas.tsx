@@ -62,7 +62,7 @@ export function Canvas({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen:
 
 function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: boolean; onOpenBrokerConnection: () => void }) {
   const { fitView } = useReactFlow();
-  const { nodes: appNodes } = useCanvas();
+  const { nodes: appNodes, updatePosition } = useCanvas();
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<Node>([BROKER_NODE]);
   const [rfEdges, setRfEdges] = useEdgesState<Edge>([]);
   // Read inside the debounced fitView calls below instead of rfNodes
@@ -83,15 +83,23 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
   };
 
   useEffect(() => {
+    // Runs on every stats tick (each node's counters update every ~400ms), so
+    // existing node objects are spread rather than rebuilt from scratch -
+    // React Flow keeps a node's `measured` size, selection and in-progress
+    // drag state on the node object itself, and a fresh object without them
+    // forces every node to be re-measured on every tick and can interrupt a
+    // drag mid-gesture.
     setRfNodes((prev) => {
       const byId = new Map(prev.map((n) => [n.id, n]));
       const brokerNode = byId.get('broker') ?? BROKER_NODE;
+      const existingDiscard = byId.get(DISCARD_NODE_ID);
       const next: Node[] = [
         brokerNode,
         {
+          ...existingDiscard,
           id: DISCARD_NODE_ID,
           type: 'discard',
-          position: byId.get(DISCARD_NODE_ID)?.position ?? DEFAULT_DISCARD_POSITION,
+          position: existingDiscard?.position ?? DEFAULT_DISCARD_POSITION,
           draggable: true,
           data: { sunburstOpen },
         },
@@ -109,6 +117,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
             y: (brokerNode.position.y + appNode.position.y) / 2,
           };
           next.push({
+            ...existingQueue,
             id: qId,
             type: 'queue',
             position: existingQueue?.position ?? midpoint,
@@ -118,6 +127,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
         }
 
         next.push({
+          ...existing,
           id: appNode.id,
           type: appNode.kind,
           position: existing?.position ?? appNode.position,
@@ -225,6 +235,12 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
         nodes={rfNodes}
         edges={rfEdges}
         onNodesChange={onNodesChange}
+        // Drag positions otherwise live only in React Flow's local state, so
+        // an exported scenario (and the autosave) would put every node back
+        // where it was first spawned.
+        onNodeDragStop={(_event, node) => {
+          if (node.type === 'publisher' || node.type === 'consumer') updatePosition(node.id, node.position);
+        }}
         // Double-clicking blank canvas normally zooms in (react-flow's
         // default) - that same pane-level dblclick-to-zoom gesture also
         // swallows the event before it ever reaches onNodeDoubleClick, so

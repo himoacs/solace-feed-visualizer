@@ -79,3 +79,28 @@ export function parseScenarioFile(text: string): ScenarioFile {
   }
   return data as ScenarioFile;
 }
+
+// The live canvas only exists in memory, so anything that reloads the page -
+// the Vite dev server reloading, the browser discarding a background tab, an
+// accidental Cmd+R - wipes it. It's saved here continuously (same shape as an
+// exported scenario) so it can be restored with one click.
+const AUTOSAVE_KEY = 'feed-viz-canvas-autosave';
+
+export function saveAutosave(scenario: ScenarioFile): void {
+  try {
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(scenario));
+  } catch {
+    // Storage full/unavailable - autosave is best-effort.
+  }
+}
+
+export function loadAutosave(): ScenarioFile | null {
+  try {
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if (!raw) return null;
+    const scenario = parseScenarioFile(raw);
+    return scenario.nodes.length > 0 ? scenario : null;
+  } catch {
+    return null;
+  }
+}

@@ -186,28 +186,44 @@ export function getMonitorClientPassword(): string {
   return MONITOR_CLIENT_PASSWORD;
 }
 
+// Idempotent on purpose: a queue outlives the page that created it, so after
+// a reload (or a restored/imported scenario) the queue from the lost session
+// is usually still on the broker. Reusing it - rather than failing on
+// ALREADY_EXISTS - is also just real durable-queue behavior.
 export async function createQueue(broker: BrokerConnection, queueName: string, maxMsgSpoolUsageMb = 1): Promise<void> {
-  await sempCall(broker, vpnPath(broker, '/queues'), {
-    method: 'POST',
-    body: {
-      queueName,
-      accessType: 'exclusive',
-      permission: 'consume',
-      ingressEnabled: true,
-      egressEnabled: true,
-      // Small by default (1MB) so a live demo can actually fill the queue and
-      // trigger real discard/NACK behavior - the broker's own default (200MB)
-      // needs ~1.6M small messages to ever reach, which no demo can reach live.
-      maxMsgSpoolUsage: maxMsgSpoolUsageMb,
-    },
-  });
+  try {
+    await sempCall(broker, vpnPath(broker, '/queues'), {
+      method: 'POST',
+      body: {
+        queueName,
+        accessType: 'exclusive',
+        permission: 'consume',
+        ingressEnabled: true,
+        egressEnabled: true,
+        // Small by default (1MB) so a live demo can actually fill the queue and
+        // trigger real discard/NACK behavior - the broker's own default (200MB)
+        // needs ~1.6M small messages to ever reach, which no demo can reach live.
+        maxMsgSpoolUsage: maxMsgSpoolUsageMb,
+      },
+    });
+  } catch (err) {
+    if (!/already exists/i.test((err as Error).message)) throw err;
+    await sempCall(broker, vpnPath(broker, `/queues/${encodeURIComponent(queueName)}`), {
+      method: 'PATCH',
+      body: { maxMsgSpoolUsage: maxMsgSpoolUsageMb },
+    });
+  }
 }
 
 export async function addQueueSubscription(broker: BrokerConnection, queueName: string, subscriptionTopic: string): Promise<void> {
-  await sempCall(broker, vpnPath(broker, `/queues/${encodeURIComponent(queueName)}/subscriptions`), {
-    method: 'POST',
-    body: { subscriptionTopic },
-  });
+  try {
+    await sempCall(broker, vpnPath(broker, `/queues/${encodeURIComponent(queueName)}/subscriptions`), {
+      method: 'POST',
+      body: { subscriptionTopic },
+    });
+  } catch (err) {
+    if (!/already exists/i.test((err as Error).message)) throw err;
+  }
 }
 
 /** A queue's subscriptions stay live independent of its consumer's run/pause state - editing

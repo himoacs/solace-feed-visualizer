@@ -54,6 +54,15 @@ function toDeliveryMode(mode: DeliveryMode): solace.MessageDeliveryModeType {
   return mode === 'persistent' ? solace.MessageDeliveryModeType.PERSISTENT : solace.MessageDeliveryModeType.DIRECT;
 }
 
+// ~1 minute of automatic reconnection (20 x 3s) - enough to ride out a wifi
+// blip or a broker container restart mid-demo. The previous 3 x 1s gave up
+// after about 3 seconds, leaving every node permanently stopped.
+const SESSION_RETRY_PROPS = {
+  connectRetries: 3,
+  reconnectRetries: 20,
+  reconnectRetryWaitInMsecs: 3000,
+};
+
 class MessagingEngine {
   private entries = new Map<string, EngineEntry>();
 
@@ -74,6 +83,27 @@ class MessagingEngine {
     if (entry.statsInterval) clearInterval(entry.statsInterval);
     entry.publishInterval = null;
     entry.statsInterval = null;
+  }
+
+  /** Reconnect/disconnect handling shared by publisher and consumer sessions.
+   * Status is only reported while this is still the node's current session:
+   * stop() drops the entry before disconnecting, so a replaced session's late
+   * DISCONNECTED can't overwrite the status of the one that replaced it. */
+  private wireSessionLifecycle(nodeId: string, session: solace.Session, entry: EngineEntry) {
+    const isCurrent = () => this.entries.get(nodeId) === entry;
+    session.on(solace.SessionEventCode.RECONNECTING_NOTICE, () => {
+      if (isCurrent()) entry.handlers.onStatusChange('connecting');
+    });
+    session.on(solace.SessionEventCode.RECONNECTED_NOTICE, () => {
+      if (isCurrent()) entry.handlers.onStatusChange(entry.isPaused ? 'paused' : 'running');
+    });
+    // Only fires once reconnection has given up (or on an explicit
+    // disconnect) - the session is dead, so stop the publish timer rather
+    // than letting it call send() on it every tick.
+    session.on(solace.SessionEventCode.DISCONNECTED, () => {
+      this.teardownIntervals(entry);
+      if (isCurrent()) entry.handlers.onStatusChange('stopped');
+    });
   }
 
   startPublisher(
@@ -107,9 +137,7 @@ class MessagingEngine {
       vpnName: creds.broker.vpnName,
       userName: creds.username,
       password: creds.password,
-      connectRetries: 3,
-      reconnectRetries: 3,
-      reconnectRetryWaitInMsecs: 1000,
+      ...SESSION_RETRY_PROPS,
       // A stable, known clientName (rather than the broker's own generated
       // one) lets the UI poll this exact client's SEMP stats later.
       clientName: nodeId,
@@ -124,9 +152,7 @@ class MessagingEngine {
     session.on(solace.SessionEventCode.CONNECT_FAILED_ERROR, (event: solace.SessionEvent) => {
       handlers.onStatusChange('error', event.infoStr || 'Connection failed');
     });
-    session.on(solace.SessionEventCode.DISCONNECTED, () => {
-      handlers.onStatusChange('stopped');
-    });
+    this.wireSessionLifecycle(nodeId, session, entry);
     // Only ever fires for Persistent/Non-Persistent (Guaranteed) sends - a
     // Direct publish has no ack/nack channel, so this is harmless to always
     // register rather than gating on the current QoS (which can change if
@@ -227,9 +253,7 @@ class MessagingEngine {
       vpnName: creds.broker.vpnName,
       userName: creds.username,
       password: creds.password,
-      connectRetries: 3,
-      reconnectRetries: 3,
-      reconnectRetryWaitInMsecs: 1000,
+      ...SESSION_RETRY_PROPS,
       clientName: nodeId,
     });
     entry.session = session;
@@ -241,9 +265,7 @@ class MessagingEngine {
     session.on(solace.SessionEventCode.CONNECT_FAILED_ERROR, (event: solace.SessionEvent) => {
       handlers.onStatusChange('error', event.infoStr || 'Connection failed');
     });
-    session.on(solace.SessionEventCode.DISCONNECTED, () => {
-      handlers.onStatusChange('stopped');
-    });
+    this.wireSessionLifecycle(nodeId, session, entry);
     session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (event: solace.SessionEvent) => {
       handlers.onStatusChange('error', event.infoStr || 'Subscription error');
     });

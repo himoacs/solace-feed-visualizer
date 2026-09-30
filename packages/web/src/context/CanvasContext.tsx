@@ -1,7 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AppNode, ConsumerConfig, PublisherConfig } from '@feed-viz/shared';
 import { useBroker } from './BrokerContext';
 import { useTaxonomy } from './TaxonomyContext';
+import { buildScenarioFile, loadAutosave, saveAutosave, type ScenarioFile } from '../lib/scenario';
 import {
   addQueueSubscription,
   createClientUsername,
@@ -36,13 +37,25 @@ interface CanvasContextValue {
   pauseNode: (id: string) => void;
   stopNode: (id: string) => void;
   updatePosition: (id: string, position: { x: number; y: number }) => void;
+  /** Tears down the current canvas and re-provisions every node in the scenario. */
+  restoreScenario: (scenario: ScenarioFile) => Promise<void>;
+  /** The canvas autosaved before the last page load, if any - offered for restore. */
+  savedSession: ScenarioFile | null;
+  restoreSavedSession: () => Promise<void>;
+  dismissSavedSession: () => void;
 }
 
 const CanvasContext = createContext<CanvasContextValue | null>(null);
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
   const { broker } = useBroker();
-  const { variables: taxonomyVariables } = useTaxonomy();
+  const { variables: taxonomyVariables, replaceAll: replaceTaxonomy } = useTaxonomy();
+  // Read at engine-start time instead of closed over, so a restore that
+  // replaces the taxonomy expands its topics against the NEW variables - the
+  // add calls that follow replaceAll() in the same async flow would otherwise
+  // still see the pre-restore taxonomy.
+  const taxonomyRef = useRef(taxonomyVariables);
+  taxonomyRef.current = taxonomyVariables;
   const [nodes, setNodes] = useState<AppNode[]>([]);
   // Client credentials aren't part of AppNode (never exported/serialized) -
   // kept in a side map so Run/Pause/Stop can reconnect without re-provisioning.
@@ -120,7 +133,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
         // above 100, causing most of the variety to never actually get
         // published. 5000 comfortably covers every current preset's full
         // product with headroom for future ones.
-        const expandedTopics = expandTopicTemplate(node.config.topicTemplate, taxonomyVariables, { maxTopics: 5000 });
+        const expandedTopics = expandTopicTemplate(node.config.topicTemplate, taxonomyRef.current, { maxTopics: 5000 });
         messagingEngine.startPublisher(
           node.id,
           { broker, username: creds.username, password: creds.password },
@@ -132,7 +145,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
         messagingEngine.startConsumer(node.id, { broker, username: creds.username, password: creds.password }, node.config, handlers);
       }
     },
-    [broker, patchNode, taxonomyVariables]
+    [broker, patchNode]
   );
 
   const provisionAndStart = useCallback(
@@ -214,7 +227,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const removeNode = useCallback(
     async (id: string) => {
       messagingEngine.stop(id);
-      const node = nodes.find((n) => n.id === id);
+      const node = nodesRef.current.find((n) => n.id === id);
       credentialsRef.current.delete(id);
       setNodes((prev) => prev.filter((n) => n.id !== id));
       if (node) {
@@ -232,7 +245,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [broker, nodes]
+    [broker]
   );
 
   const editPublisher = useCallback(
@@ -318,6 +331,53 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
     patchNode(id, { position });
   }, [patchNode]);
 
+  const restoreScenario = useCallback(
+    async (scenario: ScenarioFile) => {
+      for (const node of [...nodesRef.current]) {
+        await removeNode(node.id);
+      }
+      replaceTaxonomy(scenario.taxonomy);
+      taxonomyRef.current = scenario.taxonomy;
+      for (const n of scenario.nodes) {
+        if (n.kind === 'publisher') await addPublisher(n.config, n.position, n.name);
+        else await addConsumer(n.config, n.position, n.name);
+      }
+    },
+    [addConsumer, addPublisher, removeNode, replaceTaxonomy]
+  );
+
+  // The session saved before this page load. While it's on offer, autosave is
+  // paused - otherwise the empty canvas every page load starts with would
+  // immediately overwrite the very session being offered for restore.
+  const [savedSession, setSavedSession] = useState<ScenarioFile | null>(loadAutosave);
+
+  const restoreSavedSession = useCallback(async () => {
+    const scenario = savedSession;
+    if (!scenario) return;
+    setSavedSession(null);
+    await restoreScenario(scenario);
+  }, [restoreScenario, savedSession]);
+
+  const dismissSavedSession = useCallback(() => setSavedSession(null), []);
+
+  // Building a new canvas while the offer is still showing means starting fresh.
+  useEffect(() => {
+    if (savedSession && nodes.length > 0) setSavedSession(null);
+  }, [savedSession, nodes.length]);
+
+  // Keyed on the serialized scenario content rather than `nodes` itself, which
+  // changes on every stats tick - so this only writes when something a
+  // restore would actually need (a config, name, position) has changed.
+  const autosaveContent = useMemo(() => {
+    const { taxonomy, nodes: scenarioNodes } = buildScenarioFile(taxonomyVariables, nodes);
+    return JSON.stringify({ taxonomy, nodes: scenarioNodes });
+  }, [taxonomyVariables, nodes]);
+
+  useEffect(() => {
+    if (savedSession) return;
+    saveAutosave({ version: 1, savedAt: new Date().toISOString(), ...JSON.parse(autosaveContent) });
+  }, [autosaveContent, savedSession]);
+
   return (
     <CanvasContext.Provider
       value={{
@@ -333,6 +393,10 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
         pauseNode,
         stopNode,
         updatePosition,
+        restoreScenario,
+        savedSession,
+        restoreSavedSession,
+        dismissSavedSession,
       }}
     >
       {children}

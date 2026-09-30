@@ -5,8 +5,8 @@ import { buildScenarioFile, downloadScenarioFile, parseScenarioFile, ScenarioPar
 import { ConfirmDialog } from './ConfirmDialog';
 
 export function ScenarioControls() {
-  const { nodes, addPublisher, addConsumer, removeNode } = useCanvas();
-  const { variables, replaceAll } = useTaxonomy();
+  const { nodes, restoreScenario } = useCanvas();
+  const { variables } = useTaxonomy();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingScenario, setPendingScenario] = useState<ScenarioFile | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -35,18 +35,7 @@ export function ScenarioControls() {
     setPendingScenario(null);
     setBusy(true);
     try {
-      // Tear down current nodes (and their broker objects) before restoring.
-      for (const node of nodes) {
-        await removeNode(node.id);
-      }
-      replaceAll(scenario.taxonomy);
-      for (const n of scenario.nodes) {
-        if (n.kind === 'publisher') {
-          await addPublisher(n.config, n.position);
-        } else {
-          await addConsumer(n.config, n.position);
-        }
-      }
+      await restoreScenario(scenario);
     } catch (err) {
       setImportError((err as Error).message);
     } finally {
