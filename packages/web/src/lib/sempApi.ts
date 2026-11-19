@@ -83,8 +83,12 @@ export async function ensureVpnExists(broker: BrokerConnection): Promise<void> {
   let exists = true;
   try {
     await sempCall(broker, `/msgVpns/${encodeURIComponent(broker.vpnName)}`, { apiType: 'config' });
-  } catch {
-    exists = false;
+  } catch (err) {
+    // Only a genuine "not found" means the VPN is missing. Anything else
+    // (bad credentials, unreachable broker, ...) must surface as-is rather
+    // than be misread as "missing" and trigger a doomed create.
+    if (err instanceof SempApiError && (err.status === 404 || err.sempCode === 6)) exists = false;
+    else throw err;
   }
 
   if (!exists) {
