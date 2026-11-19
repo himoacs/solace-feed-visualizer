@@ -27,7 +27,7 @@ export function Tooltip({ label, children, className = 'inline-block' }: { label
     >
       {children}
       {show && (
-        <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-solace-green/30 bg-solace-blue-dark px-2 py-1 font-mono text-[10px] text-white shadow-lg">
+        <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-sc-border bg-white px-2 py-1 font-mono text-[10px] text-sc-text shadow-lg">
           {label}
         </span>
       )}

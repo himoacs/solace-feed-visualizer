@@ -15,19 +15,19 @@ export function PanelShell({ title, onClose, children }: { title: string; onClos
 
   return (
     <div
-      className="absolute inset-y-0 left-0 z-20 overflow-y-auto border-r border-white/10 bg-solace-blue-deep/98 p-5 shadow-2xl backdrop-blur"
+      className="absolute inset-y-0 left-0 z-20 overflow-y-auto border-r border-sc-border bg-white p-5 shadow-[2px_0_6px_rgba(12,45,74,0.12)]"
       style={{ width }}
     >
       <div className="flex items-center justify-between">
-        <h2 className="font-heading text-lg text-white">{title}</h2>
-        <button className="text-white/50 hover:text-white" onClick={onClose}>
+        <h2 className="text-[18px] font-semibold text-sc-text">{title}</h2>
+        <button className="text-sc-muted hover:text-sc-text" onClick={onClose}>
           ✕
         </button>
       </div>
       <div className="mt-4 flex flex-col gap-3">{children}</div>
 
       <div
-        className="absolute inset-y-0 right-0 z-30 w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-solace-green/50 active:bg-solace-green"
+        className="absolute inset-y-0 right-0 z-30 w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-sc-select/40 active:bg-sc-select"
         onPointerDown={onPointerDown}
       />
     </div>
@@ -35,8 +35,8 @@ export function PanelShell({ title, onClose, children }: { title: string; onClos
 }
 
 export function FieldLabel({ children }: { children: ReactNode }) {
-  return <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-white/50">{children}</label>;
+  return <label className="mb-1 block text-[13px] text-sc-muted">{children}</label>;
 }
 
 export const inputClass =
-  'w-full rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder-white/30 focus:border-solace-green focus:outline-none';
+  'w-full rounded border border-sc-border bg-white px-3 py-1.5 text-sm text-sc-text placeholder-sc-muted focus:border-sc-action focus:outline-none';

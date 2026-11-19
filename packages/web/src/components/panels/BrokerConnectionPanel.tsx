@@ -16,7 +16,7 @@ export function BrokerConnectionPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <PanelShell title="Broker Connection" onClose={onClose}>
-      <p className="text-xs text-white/50">
+      <p className="text-xs text-sc-muted">
         Defaults point at a local Solace broker. Testing the connection also creates the
         Message VPN below (and a dedicated client-profile with guaranteed messaging enabled,
         since the broker's own "default" profile disallows it) if they don't exist yet, so this
@@ -78,24 +78,24 @@ export function BrokerConnectionPanel({ onClose }: { onClose: () => void }) {
 
       <div className="mt-2 flex gap-2">
         <button
-          className="flex-1 rounded-md bg-solace-green py-1.5 text-sm font-medium text-solace-blue-dark hover:brightness-110"
+          className="flex-1 rounded-md bg-sc-action py-1.5 text-sm font-medium text-white hover:bg-sc-action-hover"
           onClick={save}
         >
           Save
         </button>
         <button
-          className="flex-1 rounded-md bg-white/10 py-1.5 text-sm text-white hover:bg-white/20"
+          className="flex-1 rounded-md bg-sc-chip py-1.5 text-sm text-sc-text hover:bg-sc-chip-hover"
           onClick={testConnection}
         >
           Test Connection
         </button>
       </div>
 
-      {status === 'connected' && <p className="text-xs text-solace-green">Connected to broker.</p>}
-      {status === 'error' && <p className="text-xs text-red-400">{error}</p>}
+      {status === 'connected' && <p className="text-xs text-sc-success">Connected to broker.</p>}
+      {status === 'error' && <p className="text-xs text-sc-error">{error}</p>}
 
-      <div className="mt-4 rounded-md border border-white/10 bg-black/20 p-3 text-xs text-white/50">
-        <p className="mb-1 font-semibold text-white/70">Local broker quick-start</p>
+      <div className="mt-4 rounded-md border border-sc-border bg-sc-page p-3 text-xs text-sc-muted">
+        <p className="mb-1 font-semibold text-sc-text">Local broker quick-start</p>
         <pre className="whitespace-pre-wrap font-mono text-[10px] leading-4">
 {`docker run -d --name feed-viz-broker \\
   --shm-size=1g \\
@@ -104,7 +104,7 @@ export function BrokerConnectionPanel({ onClose }: { onClose: () => void }) {
   -e username_admin_password=admin \\
   solace/solace-pubsub-standard`}
         </pre>
-        <p className="mt-1 text-[10px] text-white/40">
+        <p className="mt-1 text-[10px] text-sc-muted">
           Host ports avoid Solace's own well-known defaults (8080/8008/55555) so this doesn't
           collide with another broker or dev tool already running on your machine. The raw SMF
           port isn't needed - this app only talks to the broker over SEMP and WebSocket

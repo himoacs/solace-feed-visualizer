@@ -32,7 +32,7 @@ export function SunburstPanel({ onClose }: { onClose: () => void }) {
     storageKey: 'feed-viz-sunburst-panel-width',
   });
 
-  const [theme, setTheme] = useState<SunburstTheme>('dark');
+  const [theme, setTheme] = useState<SunburstTheme>('light');
   const [sizingMode, setSizingMode] = useState<SunburstSizingMode>('messages');
   const [viewType, setViewType] = useState<SunburstViewType>('sunburst');
   const [sortBy, setSortBy] = useState<TopicSortBy>('messages');
@@ -90,14 +90,14 @@ export function SunburstPanel({ onClose }: { onClose: () => void }) {
   );
 
   const dark = theme === 'dark';
-  const panelBg = dark ? 'bg-slate-900' : 'bg-slate-50';
+  const panelBg = dark ? 'bg-slate-900' : 'bg-sc-canvas';
   const text = dark ? 'text-slate-200' : 'text-slate-800';
   const dim = dark ? 'text-slate-400' : 'text-slate-500';
   const selectClass = `rounded border px-1.5 py-1 text-xs ${dark ? 'border-slate-700 bg-slate-800 text-slate-200' : 'border-slate-300 bg-white text-slate-800'}`;
 
   return (
     <div
-      className={`relative flex shrink-0 flex-col border-l ${dark ? 'border-slate-700' : 'border-slate-300'} ${panelBg} ${text} shadow-2xl`}
+      className={`relative flex shrink-0 flex-col border-l ${dark ? 'border-slate-700' : 'border-sc-border'} ${panelBg} ${text}`}
       style={{ width }}
     >
       <div

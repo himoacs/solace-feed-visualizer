@@ -44,17 +44,17 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
   };
 
   return (
-    <div className="w-40 rounded-xl border border-solace-green/40 bg-solace-blue-deep/95 shadow-lg transition-colors duration-200 hover:border-solace-green/70">
-      <Handle type="source" position={Position.Right} id="out" className="!bg-solace-green" />
+    <div className="w-40 rounded border border-sc-border bg-white shadow-[0_1px_3px_rgba(12,45,74,0.18)] transition-colors duration-200 hover:border-sc-select">
+      <Handle type="source" position={Position.Right} id="out" className="!bg-sc-success" />
 
       <div className="flex items-center gap-1.5 px-2.5 pt-2">
         <StatusDot status={node.status} />
-        <PublishIcon className="h-3 w-3 shrink-0 text-solace-green" />
+        <PublishIcon className="h-3 w-3 shrink-0 text-sc-success" />
         <Tooltip label={node.name} className="min-w-0 flex-1">
-          <span className="block truncate font-heading text-[12px] font-semibold text-white">{node.name}</span>
+          <span className="block truncate font-sans text-[12px] font-semibold text-sc-text">{node.name}</span>
         </Tooltip>
         <button
-          className="shrink-0 text-white/40 transition-colors hover:text-white"
+          className="shrink-0 text-sc-muted transition-colors hover:text-sc-text"
           title={expanded ? 'Collapse' : 'Expand'}
           onClick={() => setExpanded((v) => !v)}
         >
@@ -63,35 +63,35 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
       </div>
 
       <Tooltip label={node.config.topicTemplate} className="block px-2.5">
-        <span className="block truncate font-mono text-[10px] text-white/50">{node.config.topicTemplate}</span>
+        <span className="block truncate font-mono text-[10px] text-sc-muted">{node.config.topicTemplate}</span>
       </Tooltip>
 
       <div className="mt-1 flex items-center justify-between px-2.5 pb-2">
         <button
-          className="flex h-5 w-5 items-center justify-center rounded bg-solace-green/90 text-[10px] leading-none text-solace-blue-dark transition-colors hover:bg-solace-green"
+          className="flex h-5 w-5 items-center justify-center rounded bg-sc-action text-[10px] leading-none text-white transition-colors hover:bg-sc-action-hover"
           title={isRunning ? 'Pause' : 'Run'}
           onClick={() => (isRunning ? pauseNode(node.id) : runNode(node.id))}
         >
           {isRunning ? '❚❚' : '▶'}
         </button>
-        <span className="font-mono text-[10px] text-white/50">sent {node.messagesSent}</span>
+        <span className="font-mono text-[10px] text-sc-muted">sent {node.messagesSent}</span>
       </div>
 
       {node.config.deliveryMode === 'persistent' && node.messagesNacked > 0 && (
-        <p className="-mt-1 px-2.5 pb-1.5 font-mono text-[10px] text-red-400">NACKed {node.messagesNacked}</p>
+        <p className="-mt-1 px-2.5 pb-1.5 font-mono text-[10px] text-sc-error">NACKed {node.messagesNacked}</p>
       )}
 
       {expanded && (
-        <div className="border-t border-white/10 px-2.5 py-2">
+        <div className="border-t border-sc-border px-2.5 py-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wide text-solace-green">Publisher</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-sc-success">Publisher</span>
             <div className="flex items-center gap-2">
               {!editing && (
-                <button className="text-white/40 transition-colors hover:text-white" title="Edit" onClick={startEditing}>
+                <button className="text-sc-muted transition-colors hover:text-sc-text" title="Edit" onClick={startEditing}>
                   ✎
                 </button>
               )}
-              <button className="text-white/40 transition-colors hover:text-red-400" title="Remove" onClick={() => setConfirmOpen(true)}>
+              <button className="text-sc-muted transition-colors hover:text-sc-error" title="Remove" onClick={() => setConfirmOpen(true)}>
                 ✕
               </button>
             </div>
@@ -100,12 +100,12 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
           {editing ? (
             <div className="mt-1.5 flex flex-col gap-2">
               <div>
-                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-white/40">Name</label>
+                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-sc-muted">Name</label>
                 <input className={inputClass} value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} />
               </div>
 
               <div>
-                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-white/40">Topic Template</label>
+                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-sc-muted">Topic Template</label>
                 <input
                   className={`${inputClass} font-mono text-[11px]`}
                   value={draft.topicTemplate}
@@ -115,7 +115,7 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
 
               {draftHasVars && (
                 <div>
-                  <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-white/40">Topic Mode</label>
+                  <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-sc-muted">Topic Mode</label>
                   <select
                     className={inputClass}
                     value={draft.topicMode}
@@ -129,7 +129,7 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
               )}
 
               <div>
-                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-white/40">QoS / Delivery Mode</label>
+                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-sc-muted">QoS / Delivery Mode</label>
                 <select
                   className={inputClass}
                   value={draft.deliveryMode}
@@ -141,7 +141,7 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
               </div>
 
               <div>
-                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-white/40">Message Size (bytes)</label>
+                <label className="mb-0.5 block text-[10px] uppercase tracking-wide text-sc-muted">Message Size (bytes)</label>
                 <input
                   className={inputClass}
                   type="number"
@@ -151,20 +151,20 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
               </div>
 
               {saveError && (
-                <p className="truncate text-[10px] text-red-400" title={saveError}>
+                <p className="truncate text-[10px] text-sc-error" title={saveError}>
                   {saveError}
                 </p>
               )}
 
               <div className="flex gap-1.5">
                 <button
-                  className="flex-1 rounded bg-solace-green/90 py-1 text-[11px] font-medium text-solace-blue-dark transition-colors hover:bg-solace-green"
+                  className="flex-1 rounded bg-sc-action py-1 text-[11px] font-medium text-white transition-colors hover:bg-sc-action-hover"
                   onClick={saveEditing}
                 >
                   Save
                 </button>
                 <button
-                  className="flex-1 rounded bg-white/10 py-1 text-[11px] text-white transition-colors hover:bg-white/20"
+                  className="flex-1 rounded bg-sc-chip py-1 text-[11px] text-sc-text transition-colors hover:bg-sc-chip-hover"
                   onClick={cancelEditing}
                 >
                   Cancel
@@ -173,20 +173,20 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
             </div>
           ) : (
             <>
-              <div className="mt-1.5 flex items-center justify-between font-mono text-[11px] text-white/60">
+              <div className="mt-1.5 flex items-center justify-between font-mono text-[11px] text-sc-muted">
                 <span>QoS: {node.config.deliveryMode}</span>
               </div>
 
               {node.config.deliveryMode === 'persistent' ? (
-                <p className={`mt-1 font-mono text-[11px] ${node.messagesNacked > 0 ? 'text-red-400' : 'text-white/50'}`}>
+                <p className={`mt-1 font-mono text-[11px] ${node.messagesNacked > 0 ? 'text-sc-error' : 'text-sc-muted'}`}>
                   NACKed: {node.messagesNacked}
                 </p>
               ) : (
-                <p className="mt-1 text-[10px] text-white/30">Direct QoS has no ack/nack - discards here are silent.</p>
+                <p className="mt-1 text-[10px] text-sc-muted">Direct QoS has no ack/nack - discards here are silent.</p>
               )}
 
               <div className="mt-2">
-                <label className="flex items-center justify-between text-[10px] text-white/50">
+                <label className="flex items-center justify-between text-[10px] text-sc-muted">
                   <span>Rate</span>
                   <span>{formatRate(node.config.ratePerSecond)} msg/s</span>
                 </label>
@@ -197,33 +197,33 @@ export function PublisherNodeView({ data }: NodeProps & { data: { appNode: Publi
                   step={1}
                   value={rateToSlider(node.config.ratePerSecond)}
                   onChange={(e) => setRate(node.id, sliderToRate(Number(e.target.value)))}
-                  className="mt-1 w-full accent-solace-green"
+                  className="mt-1 w-full accent-sc-select"
                 />
               </div>
 
               {node.error && (
-                <p className="mt-1.5 truncate text-[10px] text-red-400" title={node.error}>
+                <p className="mt-1.5 truncate text-[10px] text-sc-error" title={node.error}>
                   {node.error}
                 </p>
               )}
 
               <div className="mt-2 flex gap-1.5">
                 <button
-                  className="flex-1 rounded bg-solace-green/90 py-1 text-[11px] font-medium text-solace-blue-dark transition-colors hover:bg-solace-green disabled:opacity-40"
+                  className="flex-1 rounded bg-sc-action py-1 text-[11px] font-medium text-white transition-colors hover:bg-sc-action-hover disabled:opacity-40"
                   onClick={() => runNode(node.id)}
                   disabled={isRunning}
                 >
                   Run
                 </button>
                 <button
-                  className="flex-1 rounded bg-white/10 py-1 text-[11px] text-white transition-colors hover:bg-white/20 disabled:opacity-40"
+                  className="flex-1 rounded bg-sc-chip py-1 text-[11px] text-sc-text transition-colors hover:bg-sc-chip-hover disabled:opacity-40"
                   onClick={() => pauseNode(node.id)}
                   disabled={!isRunning}
                 >
                   Pause
                 </button>
                 <button
-                  className="flex-1 rounded bg-white/10 py-1 text-[11px] text-white transition-colors hover:bg-white/20 disabled:opacity-40"
+                  className="flex-1 rounded bg-sc-chip py-1 text-[11px] text-sc-text transition-colors hover:bg-sc-chip-hover disabled:opacity-40"
                   onClick={() => stopNode(node.id)}
                   disabled={node.status === 'idle'}
                 >

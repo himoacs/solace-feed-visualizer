@@ -33,11 +33,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (!this.state.error) return this.props.children;
     return (
       <div className={`flex items-center justify-center p-6 ${this.props.className ?? 'h-full w-full'}`}>
-        <div className="max-w-sm rounded-lg border border-red-400/40 bg-solace-blue-deep p-4 text-sm text-white/80 shadow-xl">
-          <p className="font-medium text-red-300">{this.props.label} hit an error</p>
-          <p className="mt-1 break-words font-mono text-[11px] text-white/50">{this.state.error.message}</p>
+        <div className="max-w-sm rounded-lg border border-sc-error bg-white p-4 text-sm text-sc-text shadow-xl">
+          <p className="font-medium text-sc-error">{this.props.label} hit an error</p>
+          <p className="mt-1 break-words font-mono text-[11px] text-sc-muted">{this.state.error.message}</p>
           <button
-            className="mt-3 rounded-md bg-solace-green px-3 py-1.5 text-xs font-medium text-solace-blue-dark hover:brightness-110"
+            className="mt-3 rounded-md bg-sc-action px-3 py-1.5 text-xs font-medium text-white hover:bg-sc-action-hover"
             onClick={() => this.setState({ error: null })}
           >
             Try again

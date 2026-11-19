@@ -172,7 +172,7 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
             </optgroup>
           ))}
         </select>
-        {selectedPreset && <p className="mt-1 text-[11px] text-white/40">{selectedPreset.description}</p>}
+        {selectedPreset && <p className="mt-1 text-[11px] text-sc-muted">{selectedPreset.description}</p>}
       </div>
 
       <div>
@@ -212,28 +212,28 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
           </select>
         </div>
         {feedIndex.status === 'error' && (
-          <p className="mt-1 text-[11px] text-red-400">
+          <p className="mt-1 text-[11px] text-sc-error">
             Community feeds unavailable right now ({feedIndex.error}) -{' '}
-            <button className="underline hover:text-red-300" onClick={feedIndex.reload}>
+            <button className="underline hover:text-sc-error" onClick={feedIndex.reload}>
               Refresh
             </button>
             , or use a built-in preset / type your own topic.
           </p>
         )}
         {feedIndex.status === 'ready' && feedDetail.status === 'error' && (
-          <p className="mt-1 text-[11px] text-red-400">Could not load topics for this feed - try a different one.</p>
+          <p className="mt-1 text-[11px] text-sc-error">Could not load topics for this feed - try a different one.</p>
         )}
       </div>
 
-      <div className="flex rounded-md border border-white/10 bg-black/20 p-0.5 text-sm">
+      <div className="flex rounded-md border border-sc-border bg-sc-page p-0.5 text-sm">
         <button
-          className={`flex-1 rounded py-1 ${mode === 'direct' ? 'bg-solace-blue-sky text-solace-blue-dark' : 'text-white/60'}`}
+          className={`flex-1 rounded py-1 ${mode === 'direct' ? 'bg-sc-action text-white' : 'text-sc-muted'}`}
           onClick={() => selectMode('direct')}
         >
           Direct Subscribe
         </button>
         <button
-          className={`flex-1 rounded py-1 ${mode === 'queue' ? 'bg-solace-blue-sky text-solace-blue-dark' : 'text-white/60'}`}
+          className={`flex-1 rounded py-1 ${mode === 'queue' ? 'bg-sc-action text-white' : 'text-sc-muted'}`}
           onClick={() => selectMode('queue')}
         >
           Queue Bind
@@ -254,7 +254,7 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
             }}
             placeholder="marketdata/* or marketdata/>"
           />
-          <p className="mt-1 text-[11px] text-white/40">
+          <p className="mt-1 text-[11px] text-sc-muted">
             Use <code>*</code> for one level, <code>&gt;</code> for the rest of the hierarchy.
           </p>
         </div>
@@ -286,14 +286,14 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
                     placeholder="marketdata/* or marketdata/>"
                   />
                   {subscriptions.length > 1 && (
-                    <button className="shrink-0 text-white/40 hover:text-red-400" title="Remove subscription" onClick={() => removeSubscriptionField(i)}>
+                    <button className="shrink-0 text-sc-muted hover:text-sc-error" title="Remove subscription" onClick={() => removeSubscriptionField(i)}>
                       ✕
                     </button>
                   )}
                 </div>
               ))}
             </div>
-            <button className="mt-1.5 text-[11px] text-solace-blue-sky hover:text-white" onClick={addSubscriptionField}>
+            <button className="mt-1.5 text-[11px] text-sc-action hover:text-sc-text" onClick={addSubscriptionField}>
               + Add subscription
             </button>
           </div>
@@ -315,7 +315,7 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
               value={queueMaxSpoolMb}
               onChange={(e) => setQueueMaxSpoolMb(Math.max(1, Number(e.target.value) || 1))}
             />
-            <p className="mt-1 text-[11px] text-white/40">
+            <p className="mt-1 text-[11px] text-sc-muted">
               Kept small on purpose - a small quota fills fast in a live demo, so you can show a queue backing up and
               discarding without needing a huge message volume.
             </p>
@@ -324,7 +324,7 @@ export function AddConsumerPanel({ onClose }: { onClose: () => void }) {
       )}
 
       <button
-        className="mt-2 rounded-md bg-solace-blue-sky py-2 text-sm font-medium text-solace-blue-dark hover:brightness-110 disabled:opacity-50"
+        className="mt-2 rounded-md bg-sc-action py-2 text-sm font-medium text-white hover:bg-sc-action-hover disabled:opacity-50"
         onClick={submit}
         disabled={busy || !canSubmit}
       >

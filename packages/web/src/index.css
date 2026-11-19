@@ -11,7 +11,7 @@ body,
 }
 
 body {
-  @apply bg-solace-blue-dark text-white font-sans antialiased;
+  @apply bg-sc-page text-sc-text font-sans antialiased;
 }
 
 /* React Flow's own stylesheet gives each Controls button an opaque #fefefe
@@ -19,13 +19,18 @@ body {
    the <Controls> container never reaches it, so it's overridden here
    directly (confirmed via computed styles: without this, a white icon sat
    on a near-white button and was completely invisible). */
+.react-flow__controls {
+  box-shadow: 0 1px 3px rgba(12, 45, 74, 0.18);
+  border-radius: 4px;
+  overflow: hidden;
+}
 .react-flow__controls-button {
-  background: #093b5f;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border-bottom: 1px solid #d9dbe1;
 }
 .react-flow__controls-button:hover {
-  background: #03213b;
+  background: #ecedf0;
 }
 .react-flow__controls-button svg {
-  fill: #ffffff;
+  fill: #32495b;
 }

@@ -13,11 +13,11 @@ export function Footer() {
   const { status } = useBroker();
 
   return (
-    <div className="flex h-8 shrink-0 items-center border-t border-white/10 bg-solace-blue-dark px-4 text-xs text-white/40">
+    <div className="flex h-8 shrink-0 items-center border-t border-sc-border bg-white px-4 text-xs text-sc-muted">
       <div className="flex items-center gap-1.5">
         <span
           className={`inline-block h-1.5 w-1.5 rounded-full ${
-            status === 'connected' ? 'bg-solace-green' : status === 'error' ? 'bg-red-500' : 'bg-white/30'
+            status === 'connected' ? 'bg-sc-success' : status === 'error' ? 'bg-red-500' : 'bg-sc-muted'
           }`}
         />
         {STATUS_LABEL[status]}
@@ -27,7 +27,7 @@ export function Footer() {
         href="https://linkedin.com/in/guptahim/"
         target="_blank"
         rel="noopener noreferrer"
-        className="ml-auto flex items-center gap-1.5 transition-colors hover:text-solace-green"
+        className="ml-auto flex items-center gap-1.5 transition-colors hover:text-sc-action"
       >
         <span>Built by Himanshu Gupta</span>
         <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

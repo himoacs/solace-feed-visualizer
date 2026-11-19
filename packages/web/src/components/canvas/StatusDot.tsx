@@ -1,11 +1,11 @@
 import type { NodeStatus } from '@feed-viz/shared';
 
 const STATUS_COLOR: Record<NodeStatus, string> = {
-  idle: 'bg-white/30',
+  idle: 'bg-sc-muted',
   provisioning: 'bg-solace-orange animate-pulse',
   connecting: 'bg-solace-orange animate-pulse',
-  running: 'bg-solace-green',
-  paused: 'bg-solace-blue-sky',
+  running: 'bg-sc-success',
+  paused: 'bg-sc-select',
   error: 'bg-red-500',
 };
 

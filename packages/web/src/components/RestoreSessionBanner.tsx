@@ -24,22 +24,22 @@ export function RestoreSessionBanner() {
   };
 
   return (
-    <div className="absolute right-4 top-4 z-30 w-72 rounded-lg border border-solace-green/40 bg-solace-blue-deep/95 p-3 text-sm text-white shadow-xl">
+    <div className="absolute right-4 top-4 z-30 w-72 rounded-lg border border-sc-border bg-white p-3 text-sm text-sc-text shadow-xl">
       <p className="font-medium">Restore your previous canvas?</p>
-      <p className="mt-0.5 text-xs text-white/60">
+      <p className="mt-0.5 text-xs text-sc-muted">
         {count} {count === 1 ? 'node' : 'nodes'}, last saved {savedAt}
       </p>
       {!connected && <p className="mt-1 text-[11px] text-solace-orange">Connect to the broker first to restore.</p>}
-      {error && <p className="mt-1 break-words text-[11px] text-red-400">{error}</p>}
+      {error && <p className="mt-1 break-words text-[11px] text-sc-error">{error}</p>}
       <div className="mt-2 flex gap-2">
         <button
-          className="flex-1 rounded-md bg-solace-green py-1.5 text-xs font-medium text-solace-blue-dark hover:brightness-110 disabled:opacity-40"
+          className="flex-1 rounded-md bg-sc-action py-1.5 text-xs font-medium text-white hover:bg-sc-action-hover disabled:opacity-40"
           onClick={restore}
           disabled={!connected}
         >
           Restore
         </button>
-        <button className="flex-1 rounded-md py-1.5 text-xs text-white/70 hover:bg-white/5" onClick={dismissSavedSession}>
+        <button className="flex-1 rounded-md py-1.5 text-xs text-sc-text hover:bg-sc-chip" onClick={dismissSavedSession}>
           Start fresh
         </button>
       </div>

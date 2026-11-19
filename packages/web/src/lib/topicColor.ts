@@ -15,7 +15,7 @@ export function topicHue(topic: string): number {
 }
 
 export function topicColor(topic: string, opts: { saturation?: number; lightness?: number; alpha?: number } = {}): string {
-  const { saturation = 85, lightness = 62, alpha = 1 } = opts;
+  const { saturation = 75, lightness = 48, alpha = 1 } = opts;
   const hue = topicHue(topic);
   return alpha < 1 ? `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})` : `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }

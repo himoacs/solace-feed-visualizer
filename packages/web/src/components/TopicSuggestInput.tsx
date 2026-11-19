@@ -104,14 +104,14 @@ export function TopicSuggestInput({ value, onChange, className, placeholder }: T
         }}
       />
       {showDropdown && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-auto rounded-md border border-solace-green/30 bg-solace-blue-dark py-1 font-mono text-[11px] text-white shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-auto rounded-md border border-sc-border bg-white py-1 font-mono text-[11px] text-sc-text shadow-lg">
           {rows.map((topic, i) => (
             <button
               key={topic}
               type="button"
               className={`block w-full truncate px-2 py-1 text-left ${
-                i === highlight ? 'bg-white/10' : ''
-              } ${topic === wildcard ? 'text-solace-blue-sky' : 'text-white/80'} hover:bg-white/10`}
+                i === highlight ? 'bg-sc-chip' : ''
+              } ${topic === wildcard ? 'text-sc-action' : 'text-sc-text'} hover:bg-sc-chip`}
               onMouseEnter={() => setHighlight(i)}
               onMouseDown={(e) => {
                 // mousedown (not click) so it fires before the input's blur.

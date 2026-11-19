@@ -39,27 +39,26 @@ export function StatsBanner() {
   }, [broker, status]);
 
   return (
-    <div className="relative flex h-11 shrink-0 items-center gap-6 border-b border-white/10 bg-solace-blue-dark px-4 font-mono text-xs text-white/70">
-      <div className="absolute inset-x-0 bottom-0 h-px bg-solace-gradient opacity-20" />
+    <div className="relative flex h-12 shrink-0 items-center gap-6 border-b border-sc-border bg-white px-6 text-[13px] text-sc-text">
       <span className="flex items-center gap-1.5">
-        <span className="uppercase tracking-wide text-white/40">Ingress</span>
-        <span className="text-solace-green">{rxRate !== null ? `${rxRate.toFixed(0)} msg/s` : '—'}</span>
+        <span className="text-sc-muted">Ingress</span>
+        <span className="font-semibold text-sc-text">{rxRate !== null ? `${rxRate.toFixed(0)} msg/s` : '—'}</span>
       </span>
-      <span className="h-4 w-px bg-white/10" />
+      <span className="h-4 w-px bg-sc-chip" />
       <span className="flex items-center gap-1.5">
-        <span className="uppercase tracking-wide text-white/40">Egress</span>
-        <span className="text-solace-blue-sky">{txRate !== null ? `${txRate.toFixed(0)} msg/s` : '—'}</span>
+        <span className="text-sc-muted">Egress</span>
+        <span className="font-semibold text-sc-text">{txRate !== null ? `${txRate.toFixed(0)} msg/s` : '—'}</span>
       </span>
-      <span className="h-4 w-px bg-white/10" />
+      <span className="h-4 w-px bg-sc-chip" />
       <span className="flex items-center gap-1.5">
-        <span className="uppercase tracking-wide text-white/40">Connections</span>
-        <span>{connections ?? '—'}</span>
+        <span className="text-sc-muted">Connections</span>
+        <span className="font-semibold">{connections ?? '—'}</span>
       </span>
 
       <label className="ml-auto flex items-center gap-1.5">
-        <span className="uppercase tracking-wide text-white/40">Vertical</span>
+        <span className="text-sc-muted">Vertical</span>
         <select
-          className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs text-white focus:border-solace-green focus:outline-none"
+          className="rounded border border-sc-border bg-white px-2 py-1 text-[13px] text-sc-text focus:border-sc-action focus:outline-none"
           value={vertical}
           onChange={(e) => setVertical(e.target.value)}
         >

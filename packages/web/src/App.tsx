@@ -28,14 +28,14 @@ function AppShell() {
         <div className="flex min-w-0 flex-1 flex-col">
           <StatsBanner />
           <div className="flex min-h-0 flex-1">
-            <main className="relative min-w-0 flex-1 bg-solace-blue-dark">
+            <main className="relative min-w-0 flex-1 bg-sc-canvas">
               <ErrorBoundary label="Canvas">
                 <Canvas sunburstOpen={sunburstOpen} onOpenBrokerConnection={() => setPanel('broker')} />
               </ErrorBoundary>
               <RestoreSessionBanner />
               {/* Keyed on the open panel so switching panels from the nav
                   also clears a crashed one. */}
-              <ErrorBoundary key={panel ?? 'none'} label="This panel" className="absolute inset-y-0 left-0 z-20 w-96 bg-solace-blue-dark/95">
+              <ErrorBoundary key={panel ?? 'none'} label="This panel" className="absolute inset-y-0 left-0 z-20 w-96 bg-white">
                 {panel === 'broker' && <BrokerConnectionPanel onClose={() => setPanel(null)} />}
                 {panel === 'taxonomy' && <TaxonomyPanel onClose={() => setPanel(null)} />}
                 {panel === 'publisher' && <AddPublisherPanel onClose={() => setPanel(null)} />}
@@ -46,7 +46,7 @@ function AppShell() {
                 shrinks and re-fits when this opens rather than being covered
                 on top of a canvas that still thinks it owns the full width. */}
             {sunburstOpen && (
-              <ErrorBoundary label="Topic Explorer" className="w-[560px] shrink-0 border-l border-white/10">
+              <ErrorBoundary label="Topic Explorer" className="w-[560px] shrink-0 border-l border-sc-border">
                 <SunburstPanel onClose={() => setSunburstOpen(false)} />
               </ErrorBoundary>
             )}

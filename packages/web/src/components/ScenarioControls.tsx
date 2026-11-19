@@ -47,14 +47,14 @@ export function ScenarioControls() {
     <div className="flex flex-col gap-1">
       <div className="flex gap-1.5">
         <button
-          className="flex-1 rounded-md px-2 py-1.5 text-xs text-white/70 hover:bg-white/5"
+          className="flex-1 rounded-md px-1 py-1.5 text-[11px] text-white/80 hover:bg-white/10"
           onClick={handleExport}
           title="Download the current topic taxonomy and canvas as a JSON scenario file"
         >
           Export
         </button>
         <button
-          className="flex-1 rounded-md px-2 py-1.5 text-xs text-white/70 hover:bg-white/5 disabled:opacity-40"
+          className="flex-1 rounded-md px-2 py-1.5 text-[11px] text-white/80 hover:bg-white/10 disabled:opacity-40"
           onClick={() => fileInputRef.current?.click()}
           disabled={busy}
           title="Load a saved scenario file"
@@ -63,7 +63,7 @@ export function ScenarioControls() {
         </button>
       </div>
       <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleFileSelected} />
-      {importError && <p className="truncate px-2 text-[10px] text-red-400" title={importError}>{importError}</p>}
+      {importError && <p className="truncate px-2 text-[10px] text-[#F26662]" title={importError}>{importError}</p>}
 
       <ConfirmDialog
         open={!!pendingScenario}

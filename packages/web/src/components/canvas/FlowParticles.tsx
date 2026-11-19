@@ -19,7 +19,37 @@ const MAX_PARTICLES = 400;
 const PARTICLE_DURATION_MS = 650;
 const NACK_DURATION_MS = 900;
 
+type Side = 'left' | 'right' | 'top' | 'bottom';
+interface Anchor {
+  x: number;
+  y: number;
+  side: Side;
+}
+
+// React Flow's default bezier edge: control points pushed out from each
+// handle along its facing direction by calculateControlOffset(). Reproduced
+// here so a particle rides the exact curve of the drawn edge.
+function controlOffset(distance: number): number {
+  return distance >= 0 ? 0.5 * distance : 0.25 * 25 * Math.sqrt(-distance);
+}
+function controlPoint(a: Anchor, other: Anchor): { x: number; y: number } {
+  switch (a.side) {
+    case 'right':
+      return { x: a.x + controlOffset(other.x - a.x), y: a.y };
+    case 'left':
+      return { x: a.x - controlOffset(a.x - other.x), y: a.y };
+    case 'bottom':
+      return { x: a.x, y: a.y + controlOffset(other.y - a.y) };
+    case 'top':
+      return { x: a.x, y: a.y - controlOffset(a.y - other.y) };
+  }
+}
+
 interface Particle {
+  p0: { x: number; y: number };
+  p1: { x: number; y: number };
+  p2: { x: number; y: number };
+  p3: { x: number; y: number };
   fromX: number;
   fromY: number;
   toX: number;
@@ -39,10 +69,33 @@ export function FlowParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
 
-  const anchorFor = (nodeId: string, side: 'in' | 'out' | 'bottom'): { x: number; y: number } | null => {
+  const anchorFor = (nodeId: string, side: 'in' | 'out' | 'bottom'): Anchor | null => {
     const node = store.getState().nodeLookup.get(nodeId);
     if (!node) return null;
     const { x, y } = node.position;
+    // Prefer the real measured handle position so the dot lands exactly on
+    // the handle the edge is drawn to; fall back to the size constants below.
+    if (side !== 'bottom') {
+      const bounds = node.internals.handleBounds;
+      const list = side === 'out' ? bounds?.source : bounds?.target;
+      const h = list?.find((b) => b.id === side) ?? list?.[0];
+      if (h) {
+        return {
+          x: node.internals.positionAbsolute.x + h.x + h.width / 2,
+          y: node.internals.positionAbsolute.y + h.y + h.height / 2,
+          side: String(h.position) as Side,
+        };
+      }
+    }
+    return anchorFallback(node, x, y, side);
+  };
+
+  const anchorFallback = (node: any, x: number, y: number, side: 'in' | 'out' | 'bottom'): Anchor => {
+    const a = rawAnchor(node, x, y, side);
+    return { ...a, side: side === 'bottom' ? 'bottom' : side === 'in' ? (node.type === 'discard' ? 'top' : 'left') : 'right' };
+  };
+
+  const rawAnchor = (node: any, x: number, y: number, side: 'in' | 'out' | 'bottom'): { x: number; y: number } => {
     if (node.type === 'broker') {
       if (side === 'in') return { x, y: y + BROKER_SIZE / 2 };
       // Discards leave from the broker's bottom, not its right side - the
@@ -61,11 +114,22 @@ export function FlowParticles() {
     return side === 'out' ? { x: x + APP_NODE_WIDTH, y: y + APP_NODE_HANDLE_Y } : { x, y: y + APP_NODE_HANDLE_Y };
   };
 
-  const spawn = (from: { x: number; y: number } | null, to: { x: number; y: number } | null, color: string, kind: 'normal' | 'nack' = 'normal') => {
+  const spawn = (from: Anchor | null, to: Anchor | null, color: string, kind: 'normal' | 'nack' = 'normal') => {
     if (!from || !to) return;
+    const pts = [from.x, from.y, to.x, to.y];
+    if (!pts.every(Number.isFinite)) {
+      console.error('[FlowParticles] non-finite anchor', from, to);
+      return;
+    }
     const particles = particlesRef.current;
     if (particles.length >= MAX_PARTICLES) particles.shift();
+    // The discard sink's handle faces up; broker "bottom" has no handle, so
+    // force that hop to leave downward.
     particles.push({
+      p0: { x: from.x, y: from.y },
+      p1: controlPoint(from, to),
+      p2: controlPoint(to, from),
+      p3: { x: to.x, y: to.y },
       fromX: from.x,
       fromY: from.y,
       toX: to.x,
@@ -112,6 +176,7 @@ export function FlowParticles() {
     let raf: number;
 
     const draw = () => {
+      try {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (canvas && ctx) {
@@ -154,8 +219,9 @@ export function FlowParticles() {
             ctx.arc(screenX, screenY, radius, 0, Math.PI * 2);
             ctx.stroke();
           } else {
-            const flowX = p.fromX + (p.toX - p.fromX) * t;
-            const flowY = p.fromY + (p.toY - p.fromY) * t;
+            const u = 1 - t;
+            const flowX = u * u * u * p.p0.x + 3 * u * u * t * p.p1.x + 3 * u * t * t * p.p2.x + t * t * t * p.p3.x;
+            const flowY = u * u * u * p.p0.y + 3 * u * u * t * p.p1.y + 3 * u * t * t * p.p2.y + t * t * t * p.p3.y;
             const screenX = flowX * zoom + vx;
             const screenY = flowY * zoom + vy;
             const fadeIn = Math.min(t / 0.1, 1);
@@ -170,6 +236,11 @@ export function FlowParticles() {
         }
         ctx.globalAlpha = 1;
         particlesRef.current = alive;
+      }
+      } catch (err) {
+        // Never let one bad frame kill the animation loop.
+        console.error('[FlowParticles] draw failed', err);
+        particlesRef.current = [];
       }
       raf = requestAnimationFrame(draw);
     };

@@ -148,7 +148,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
             target: 'broker',
             targetHandle: 'in',
             animated: appNode.status === 'running',
-            style: { stroke: '#00C895' },
+            style: { stroke: '#32BA9C', strokeWidth: 1.5 },
           };
         }
         if (appNode.config.mode === 'queue') {
@@ -167,7 +167,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
               target: qId,
               targetHandle: 'in',
               animated: appNode.status === 'running',
-              style: { stroke: '#C2F7FF' },
+              style: { stroke: '#8FA3B3', strokeWidth: 1.5 },
             },
             {
               id: `e-${appNode.id}-out`,
@@ -176,7 +176,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
               target: appNode.id,
               targetHandle: 'in',
               animated: appNode.status === 'running',
-              style: { stroke: '#C2F7FF' },
+              style: { stroke: '#8FA3B3', strokeWidth: 1.5 },
             },
           ];
         }
@@ -187,7 +187,7 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
           target: appNode.id,
           targetHandle: 'in',
           animated: appNode.status === 'running',
-          style: { stroke: '#C2F7FF' },
+          style: { stroke: '#8FA3B3', strokeWidth: 1.5 },
         };
       }).flat()
     );
@@ -253,14 +253,15 @@ function CanvasInner({ sunburstOpen, onOpenBrokerConnection }: { sunburstOpen: b
         nodeTypes={nodeTypes}
         nodesConnectable={false}
         proOptions={{ hideAttribution: true }}
+        style={{ background: '#F8F9FB' }}
         fitView
       >
-        <Background id="dots" color="#ffffff10" gap={24} />
+        <Background id="dots" color="#0c2d4a26" gap={24} />
         {/* A coarser ruler-line grid on top of the dot texture, for lining
             nodes up while dragging - stacking multiple Background components
             (each needs its own id) is the supported way to combine variants. */}
-        <Background id="ruler" variant={BackgroundVariant.Lines} color="#ffffff0d" gap={120} lineWidth={1} />
-        <Controls className="!border !border-white/10 !bg-solace-blue-deep" />
+        <Background id="ruler" variant={BackgroundVariant.Lines} color="#0c2d4a10" gap={120} lineWidth={1} />
+        <Controls className="!border !border-slate-300 !bg-white" />
         <FlowParticles />
       </ReactFlow>
     </div>

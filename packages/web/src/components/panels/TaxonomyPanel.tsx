@@ -54,15 +54,15 @@ function DependencyEditor({
   };
 
   return (
-    <div className="border-t border-white/10 pt-2">
-      <button className="flex items-center gap-1 text-[11px] text-white/60 hover:text-white" onClick={() => setOpen((v) => !v)}>
+    <div className="border-t border-sc-border pt-2">
+      <button className="flex items-center gap-1 text-[11px] text-sc-muted hover:text-sc-text" onClick={() => setOpen((v) => !v)}>
         <span>{open ? '▾' : '▸'}</span>
         Configure dependency
-        {dependsOn && <span className="text-solace-blue-sky">(depends on {`{${dependsOn.variable}}`})</span>}
+        {dependsOn && <span className="text-sc-action">(depends on {`{${dependsOn.variable}}`})</span>}
       </button>
 
       {open && (
-        <div className="mt-1.5 rounded-md bg-black/20 p-2">
+        <div className="mt-1.5 rounded-md bg-sc-page p-2">
           <FieldLabel>Depends on variable</FieldLabel>
           <select className={inputClass} value={dependsOn?.variable ?? ''} onChange={(e) => selectParent(e.target.value)}>
             <option value="">No dependency (independent)</option>
@@ -75,14 +75,14 @@ function DependencyEditor({
 
           {dependsOn && parent && (
             <div className="mt-2">
-              <p className="mb-1 text-[10px] text-white/40">
-                For each value of <span className="font-mono text-solace-blue-sky">{`{${parent.name}}`}</span>, the valid
-                values of <span className="font-mono text-solace-green">{`{${variable.name}}`}</span>:
+              <p className="mb-1 text-[10px] text-sc-muted">
+                For each value of <span className="font-mono text-sc-action">{`{${parent.name}}`}</span>, the valid
+                values of <span className="font-mono text-sc-success">{`{${variable.name}}`}</span>:
               </p>
               <div className="flex flex-col gap-1">
                 {parent.values.map((pv) => (
                   <div key={pv} className="flex items-center gap-1.5">
-                    <span className="w-16 shrink-0 truncate font-mono text-[10px] text-solace-blue-sky" title={pv}>
+                    <span className="w-16 shrink-0 truncate font-mono text-[10px] text-sc-action" title={pv}>
                       {pv} →
                     </span>
                     <input
@@ -128,23 +128,23 @@ function VariableCard({ variable }: { variable: TopicTaxonomyVariable }) {
   };
 
   return (
-    <div className="rounded-md border border-white/10 bg-black/20 p-2.5">
+    <div className="rounded-md border border-sc-border bg-sc-page p-2.5">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="font-mono text-xs text-solace-green">{`{${variable.name}}`}</span>
+          <span className="font-mono text-xs text-sc-success">{`{${variable.name}}`}</span>
           {variable.dependsOn && (
-            <span className="rounded bg-solace-blue-sky/15 px-1.5 py-0.5 text-[10px] text-solace-blue-sky">
+            <span className="rounded bg-solace-blue-sky/15 px-1.5 py-0.5 text-[10px] text-sc-action">
               depends on {`{${variable.dependsOn.variable}}`}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           {!isEditing && (
-            <button className="text-white/40 hover:text-white" title="Edit" onClick={startEdit}>
+            <button className="text-sc-muted hover:text-sc-text" title="Edit" onClick={startEdit}>
               ✎
             </button>
           )}
-          <button className="text-white/40 hover:text-red-400" title="Delete" onClick={() => deleteVariable(variable.name)}>
+          <button className="text-sc-muted hover:text-sc-error" title="Delete" onClick={() => deleteVariable(variable.name)}>
             ✕
           </button>
         </div>
@@ -171,22 +171,22 @@ function VariableCard({ variable }: { variable: TopicTaxonomyVariable }) {
           <DependencyEditor variable={variable} dependsOn={dependsOn} onChange={setDependsOn} />
 
           <div className="mt-1 flex justify-end gap-1.5">
-            <button className="rounded px-2 py-1 text-[11px] text-white/60 hover:bg-white/10" onClick={() => setIsEditing(false)}>
+            <button className="rounded px-2 py-1 text-[11px] text-sc-muted hover:bg-sc-chip" onClick={() => setIsEditing(false)}>
               Cancel
             </button>
-            <button className="rounded bg-solace-green px-2 py-1 text-[11px] font-medium text-solace-blue-dark" onClick={save}>
+            <button className="rounded bg-sc-action px-2 py-1 text-[11px] font-medium text-white" onClick={save}>
               Save
             </button>
           </div>
         </div>
       ) : (
         <>
-          {variable.description && <p className="mt-1 text-[11px] text-white/50">{variable.description}</p>}
+          {variable.description && <p className="mt-1 text-[11px] text-sc-muted">{variable.description}</p>}
           {variable.dependsOn && Object.keys(variable.dependsOn.valueMap).length > 0 && (
-            <div className="mt-1 space-y-0.5 text-[10px] text-white/40">
+            <div className="mt-1 space-y-0.5 text-[10px] text-sc-muted">
               {Object.entries(variable.dependsOn.valueMap).slice(0, 3).map(([pv, vals]) => (
                 <p key={pv} className="font-mono">
-                  <span className="text-solace-blue-sky">{pv}</span> → {vals.join(', ')}
+                  <span className="text-sc-action">{pv}</span> → {vals.join(', ')}
                 </p>
               ))}
               {Object.keys(variable.dependsOn.valueMap).length > 3 && (
@@ -196,11 +196,11 @@ function VariableCard({ variable }: { variable: TopicTaxonomyVariable }) {
           )}
           <div className="mt-1.5 flex flex-wrap gap-1">
             {variable.values.slice(0, 8).map((v) => (
-              <span key={v} className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-white/70">
+              <span key={v} className="rounded bg-white px-1.5 py-0.5 font-mono text-[10px] text-sc-text">
                 {v}
               </span>
             ))}
-            {variable.values.length > 8 && <span className="text-[10px] text-white/40">+{variable.values.length - 8} more</span>}
+            {variable.values.length > 8 && <span className="text-[10px] text-sc-muted">+{variable.values.length - 8} more</span>}
           </div>
         </>
       )}
@@ -242,9 +242,9 @@ export function TaxonomyPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <PanelShell title="Topic Taxonomy" onClose={onClose}>
-      <p className="text-xs text-white/50">
+      <p className="text-xs text-sc-muted">
         Define <code>{'{variable}'}</code> placeholders publishers can use in a topic template,
-        e.g. <code className="text-white/70">marketdata/v1/{'{country}'}/{'{exchange}'}/{'{ticker}'}</code>. Variables can
+        e.g. <code className="text-sc-text">marketdata/v1/{'{country}'}/{'{exchange}'}/{'{ticker}'}</code>. Variables can
         depend on each other so only valid combinations are generated.
       </p>
 
@@ -252,7 +252,7 @@ export function TaxonomyPanel({ onClose }: { onClose: () => void }) {
         <div className="flex flex-wrap gap-1.5">
           <button
             className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
-              !activeDomain ? 'bg-solace-green/20 text-solace-green' : 'bg-white/5 text-white/60 hover:bg-white/10'
+              !activeDomain ? 'bg-sc-success-bg text-sc-success' : 'bg-white text-sc-muted hover:bg-sc-chip'
             }`}
             onClick={() => selectDomain(null)}
           >
@@ -263,8 +263,8 @@ export function TaxonomyPanel({ onClose }: { onClose: () => void }) {
               key={group.domain}
               className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
                 activeDomain?.domain === group.domain
-                  ? 'bg-solace-green/20 text-solace-green'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10'
+                  ? 'bg-sc-success-bg text-sc-success'
+                  : 'bg-white text-sc-muted hover:bg-sc-chip'
               }`}
               onClick={() => selectDomain(group)}
             >
@@ -289,14 +289,14 @@ export function TaxonomyPanel({ onClose }: { onClose: () => void }) {
           onKeyDown={(e) => e.key === 'Enter' && addVariable()}
         />
         <button
-          className="shrink-0 rounded-md bg-white/10 px-3 text-sm text-white hover:bg-white/20"
+          className="shrink-0 rounded-md bg-sc-chip px-3 text-sm text-sc-text hover:bg-sc-chip-hover"
           onClick={addVariable}
         >
           Add
         </button>
       </div>
 
-      <button className="mt-2 self-start text-xs text-white/40 hover:text-white/70" onClick={resetToDefaults}>
+      <button className="mt-2 self-start text-xs text-sc-muted hover:text-sc-text" onClick={resetToDefaults}>
         Reset to defaults (market data example)
       </button>
     </PanelShell>

@@ -51,8 +51,8 @@ export function DiscardNode({ data }: NodeProps & { data: { sunburstOpen: boolea
 
   return (
     <div
-      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed bg-black/40 transition-colors duration-200 ${
-        pulse ? 'border-red-400' : 'border-white/20 hover:border-white/35'
+      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed bg-white transition-colors duration-200 ${
+        pulse ? 'border-red-400' : 'border-sc-border hover:border-sc-muted'
       }`}
       title={
         data.sunburstOpen
@@ -60,8 +60,8 @@ export function DiscardNode({ data }: NodeProps & { data: { sunburstOpen: boolea
           : `Discarded: ${total} - messages published to a topic nobody is subscribed to`
       }
     >
-      <Handle type="target" position={Position.Top} id="in" className="!bg-white/30" />
-      <span className="font-mono text-[10px] text-white/80">{total}</span>
+      <Handle type="target" position={Position.Top} id="in" className="!bg-sc-muted" />
+      <span className="font-mono text-[10px] text-sc-text">{total}</span>
     </div>
   );
 }

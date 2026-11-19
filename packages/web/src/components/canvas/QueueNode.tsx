@@ -66,39 +66,38 @@ export function QueueNode({ data }: NodeProps & { data: { consumerNode: Consumer
     : fillFraction > 0.75
       ? 'bg-solace-orange'
       : fillFraction > 0.4
-        ? 'bg-solace-blue-sky/80'
-        : 'bg-solace-blue-sky/40';
+        ? 'bg-sc-select'
+        : 'bg-sc-border';
 
   return (
     <div
-      className={`flex w-28 flex-col items-center gap-1 rounded-xl border bg-solace-blue-deep/95 p-1.5 shadow-lg transition-colors duration-200 ${
-        isFull || justDiscarded ? 'border-red-400' : 'border-white/15 hover:border-white/30'
+      className={`flex w-28 flex-col items-center gap-1 rounded border bg-white p-1.5 shadow-[0_1px_3px_rgba(12,45,74,0.18)] transition-colors duration-200 ${
+        isFull || justDiscarded ? 'border-red-400' : 'border-sc-border hover:border-sc-muted'
       }`}
     >
-      <Handle type="target" position={Position.Left} id="in" className="!bg-solace-blue-sky" />
-      <Handle type="source" position={Position.Right} id="out" className="!bg-solace-blue-sky" />
+      <Handle type="target" position={Position.Left} id="in" className="!bg-sc-select" />
+      <Handle type="source" position={Position.Right} id="out" className="!bg-sc-select" />
 
       {/* A horizontal cylinder, not a vertical bar - fills left (broker/in
           side) to right (consumer/out side), matching the handles above, the
           way a real queue's backlog sits between the two. */}
       <Tooltip label={`${depth ?? 0} queued`} className="block w-full">
-        <div className="relative h-7 w-full overflow-hidden rounded-full border border-white/20 bg-black/30">
+        <div className="relative h-7 w-full overflow-hidden rounded-full border border-sc-border bg-sc-page">
           <div
             className={`absolute inset-y-0 left-0 transition-all duration-500 ${fillColor}`}
             style={{ width: `${fillFraction * 100}%` }}
           />
-          <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/15 via-transparent to-black/20" />
-          <div className="pointer-events-none absolute inset-y-0 left-1.5 w-px bg-white/10" />
-          <div className="pointer-events-none absolute inset-y-0 right-1.5 w-px bg-white/10" />
+          <div className="pointer-events-none absolute inset-y-0 left-1.5 w-px bg-sc-chip" />
+          <div className="pointer-events-none absolute inset-y-0 right-1.5 w-px bg-sc-chip" />
         </div>
       </Tooltip>
 
       <Tooltip label={queueName ?? ''} className="flex max-w-full items-center gap-1">
-        <QueueIcon className="h-2.5 w-2.5 shrink-0 text-solace-blue-sky" />
-        <span className="truncate font-mono text-[9px] text-white/50">{queueName}</span>
+        <QueueIcon className="h-2.5 w-2.5 shrink-0 text-sc-action" />
+        <span className="truncate font-mono text-[9px] text-sc-muted">{queueName}</span>
       </Tooltip>
-      <span className="font-mono text-[10px] text-white/70">{depth ?? '—'}</span>
-      {fullDiscards > 0 && <span className="font-mono text-[9px] text-red-400">full ×{fullDiscards}</span>}
+      <span className="font-mono text-[10px] text-sc-text">{depth ?? '—'}</span>
+      {fullDiscards > 0 && <span className="font-mono text-[9px] text-sc-error">full ×{fullDiscards}</span>}
     </div>
   );
 }

@@ -62,7 +62,7 @@ export function SunburstChart({
   height = 600,
   sizingMode = 'messages',
   viewType = 'sunburst',
-  theme = 'dark',
+  theme = 'light',
   accurateOthersSizes = false,
   onHover,
   onClick,
@@ -680,7 +680,7 @@ export function SunburstChart({
         <button
           type="button"
           onClick={() => zoomOutRef.current()}
-          className="mb-2 rounded-md bg-white/10 px-3 py-1 text-sm text-white hover:bg-white/20"
+          className={`mb-2 rounded-md px-3 py-1 text-sm ${theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-sc-chip text-sc-text hover:bg-sc-chip-hover'}`}
         >
           ← Back
         </button>

@@ -165,16 +165,16 @@ export function AddPublisherPanel({ onClose }: { onClose: () => void }) {
           </select>
         </div>
         {feedIndex.status === 'error' && (
-          <p className="mt-1 text-[11px] text-red-400">
+          <p className="mt-1 text-[11px] text-sc-error">
             Community feeds unavailable right now ({feedIndex.error}) -{' '}
-            <button className="underline hover:text-red-300" onClick={feedIndex.reload}>
+            <button className="underline hover:text-sc-error" onClick={feedIndex.reload}>
               Refresh
             </button>
             , or use a built-in preset / type your own topic.
           </p>
         )}
         {feedIndex.status === 'ready' && feedDetail.status === 'error' && (
-          <p className="mt-1 text-[11px] text-red-400">Could not load topics for this feed - try a different one.</p>
+          <p className="mt-1 text-[11px] text-sc-error">Could not load topics for this feed - try a different one.</p>
         )}
       </div>
 
@@ -191,7 +191,7 @@ export function AddPublisherPanel({ onClose }: { onClose: () => void }) {
           }}
           placeholder="marketdata/v1/{country}/{exchange}/{ticker}"
         />
-        <p className="mt-1 text-[11px] text-white/40">
+        <p className="mt-1 text-[11px] text-sc-muted">
           {selectedPreset ? (
             selectedPreset.description
           ) : (
@@ -203,12 +203,12 @@ export function AddPublisherPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       {sampleTopics.length > 0 && (
-        <div className="rounded-md border border-white/10 bg-black/20 p-2 text-[10px] text-white/50">
-          <p className="mb-1 text-white/40">
+        <div className="rounded-md border border-sc-border bg-sc-page p-2 text-[10px] text-sc-muted">
+          <p className="mb-1 text-sc-muted">
             {templateVars.length > 0 ? `Sample topics (${sampleTopics.length} shown):` : 'Topic:'}
           </p>
           {sampleTopics.map((t) => (
-            <p key={t} className="truncate font-mono text-white/70">
+            <p key={t} className="truncate font-mono text-sc-text">
               {t}
             </p>
           ))}
@@ -247,7 +247,7 @@ export function AddPublisherPanel({ onClose }: { onClose: () => void }) {
           step={1}
           value={rateToSlider(rate)}
           onChange={(e) => setRate(sliderToRate(Number(e.target.value)))}
-          className="w-full accent-solace-green"
+          className="w-full accent-sc-select"
         />
       </div>
 
@@ -262,7 +262,7 @@ export function AddPublisherPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       <button
-        className="mt-2 rounded-md bg-solace-green py-2 text-sm font-medium text-solace-blue-dark hover:brightness-110 disabled:opacity-50"
+        className="mt-2 rounded-md bg-sc-action py-2 text-sm font-medium text-white hover:bg-sc-action-hover disabled:opacity-50"
         onClick={submit}
         disabled={busy || !topicTemplate}
       >
